@@ -70,6 +70,8 @@ window.__ModuleLoader__.load({
       'settings.title': '通知设置',
       'settings.description': '服务中断、性能下降或恢复时，在页面上显示一条通知。所有设置保存在当前浏览器。',
       'settings.form': '通知形式',
+      'settings.language': '显示语言',
+      'settings.language.auto': '自动（跟随界面）',
       'settings.form.bubble': '气泡',
       'settings.form.banner': '横幅',
       'settings.form.pill': '胶囊',
@@ -161,6 +163,8 @@ window.__ModuleLoader__.load({
       'settings.title': 'Notification settings',
       'settings.description': 'Shows a notice in the page when the DeepSeek service is interrupted, degraded or recovered. Settings are stored in this browser.',
       'settings.form': 'Notice form',
+      'settings.language': 'Display language',
+      'settings.language.auto': 'Auto (follow UI)',
       'settings.form.bubble': 'Bubble',
       'settings.form.banner': 'Banner',
       'settings.form.pill': 'Pill',
@@ -215,6 +219,9 @@ window.__ModuleLoader__.load({
     // --- locale ---------------------------------------------------------------
 
     let localeService = null
+    // Plugin-level display language: 'auto' follows the DSH locale, 'zh'/'en'
+    // force the plugin's own copy regardless of the UI language.
+    let languagePreference = 'auto'
 
     function builtinLang() {
       if (typeof navigator === 'undefined') return 'en'
@@ -228,6 +235,7 @@ window.__ModuleLoader__.load({
     }
 
     function activeLang() {
+      if (languagePreference === 'zh' || languagePreference === 'en') return languagePreference
       try {
         const snapshot = localeService?.getSnapshot?.()
         const active = snapshot?.active
@@ -339,6 +347,7 @@ window.__ModuleLoader__.load({
 
     let demoIndex = 0
     const DEFAULT_SETTINGS = Object.freeze({
+      language: 'auto',
       form: 'bubble',
       position: 'top-right',
       size: 'medium',
@@ -360,6 +369,7 @@ window.__ModuleLoader__.load({
 
     function sanitizeSettings(input) {
       const source = input !== null && typeof input === 'object' ? input : {}
+      const language = ['auto', 'zh', 'en'].includes(source.language) ? source.language : DEFAULT_SETTINGS.language
       const form = ['bubble', 'banner', 'pill'].includes(source.form) ? source.form : DEFAULT_SETTINGS.form
       const allowedPositions = form === 'banner' ? BANNER_POSITIONS : CORNER_POSITIONS
       let position = allowedPositions.includes(source.position) ? source.position : DEFAULT_SETTINGS.position
@@ -377,6 +387,7 @@ window.__ModuleLoader__.load({
           ? source.position
           : DEFAULT_SETTINGS.statusPosition
       return {
+        language,
         form,
         position,
         size,
@@ -406,6 +417,7 @@ window.__ModuleLoader__.load({
     }
 
     let settings = loadSettings()
+    languagePreference = settings.language
 
     function persistSettings() {
       try {
@@ -418,6 +430,7 @@ window.__ModuleLoader__.load({
     function updateSettings(patch) {
       const previous = settings
       settings = sanitizeSettings({ ...settings, ...patch })
+      if (settings.language !== previous.language) languagePreference = settings.language
       persistSettings()
       if (settings.refreshSeconds !== previous.refreshSeconds) void fetchState(true)
       bump()
@@ -670,6 +683,7 @@ window.__ModuleLoader__.load({
 
     function resetSettings() {
       settings = sanitizeSettings({ ...DEFAULT_SETTINGS })
+      languagePreference = settings.language
       persistSettings()
       dismissed = new Set()
       persistDismissed()
@@ -1120,6 +1134,23 @@ html[data-platform="darwin"] .dsh-ds-layer{--dsh-ds-content-top:var(--dsh-ds-top
       return h(
         'div',
         { className: 'dsh-ds-form' },
+        h(
+          'div',
+          { className: 'dsh-ds-field' },
+          h('span', { className: 'dsh-ds-field-label' }, t('settings.language')),
+          h(
+            'select',
+            {
+              className: 'dsh-ds-select',
+              value: settings.language,
+              'aria-label': t('settings.language'),
+              onChange: (event) => updateSettings({ language: event.target.value }),
+            },
+            h('option', { value: 'auto' }, t('settings.language.auto')),
+            h('option', { value: 'zh' }, '中文'),
+            h('option', { value: 'en' }, 'English'),
+          ),
+        ),
         h(
           'div',
           { className: 'dsh-ds-field' },
