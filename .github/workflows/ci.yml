@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # The live-feed cases skip instead of failing when the public status site
+      # cannot be reached from the runner; the frozen fixtures still run.
+      FEED_TEST_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check
+        run: |
+          node --check index.js
+          node --check client.js
+          node --check lib/feed.js
+      - name: Feed parser and state machine
+        run: node test/feed.test.mjs
+      - name: Host route
+        run: node test/host-route.test.mjs
+      - name: Locale dictionaries
+        run: node test/locale-audit.mjs
