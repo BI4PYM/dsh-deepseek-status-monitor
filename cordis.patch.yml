@@ -1,0 +1,7 @@
+# Insert the DeepSeek status monitor bundle into the active profile.
+- insert:
+    - id: deepseek-status
+      name: "dsh-deepseek-status-monitor"
+      config:
+        feedUrl: https://status.deepseek.com/feed.rss
+        refreshIntervalSeconds: 60

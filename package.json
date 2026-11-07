@@ -1,0 +1,66 @@
+{
+  "name": "dsh-deepseek-status-monitor",
+  "version": "1.0.0",
+  "description": "Periodically reads the DeepSeek status feed and shows configurable outage, degradation and recovery notices in the DeepSeek Harness Web UI.",
+  "type": "module",
+  "license": "MIT",
+  "author": {
+    "name": "BI4PYM",
+    "email": "1263188827@qq.com"
+  },
+  "homepage": "https://github.com/BI4PYM/dsh-deepseek-status-monitor#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BI4PYM/dsh-deepseek-status-monitor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BI4PYM/dsh-deepseek-status-monitor/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "deepseek",
+    "status",
+    "monitor",
+    "notification"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./index.js",
+  "icon": "./icon.svg",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib/",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "check": "node --check index.js && node --check client.js && node --check lib/feed.js",
+    "test": "node test/feed.test.mjs && node test/host-route.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  }
+}

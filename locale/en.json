@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "title": "DeepSeek status",
+    "description": "Polls the DeepSeek status feed and shows configurable outage, degradation and recovery notices in the page."
+  },
+  "tab": {
+    "label": "DeepSeek status"
+  }
+}

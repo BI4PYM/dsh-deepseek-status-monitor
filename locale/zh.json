@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "title": "DeepSeek 状态提醒",
+    "description": "定期读取 DeepSeek 状态源，在服务中断、性能下降或恢复时于页面显示可自定义的通知。"
+  },
+  "tab": {
+    "label": "DeepSeek 状态"
+  }
+}
